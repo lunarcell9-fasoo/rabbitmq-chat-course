@@ -1,0 +1,11 @@
+spring:
+  application:
+    name: rabbitmq-chat
+  rabbitmq:
+    username: admin
+    password: Asdf1234$
+
+
+logging:
+  level:
+    org: ERROR
