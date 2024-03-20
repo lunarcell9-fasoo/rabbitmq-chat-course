@@ -17,11 +17,11 @@ public class Tut2Receiver {
     public void receive(String in) throws InterruptedException {
         StopWatch watch = new StopWatch();
         watch.start();
-        System.out.println("instance " + this.instance +
+        System.out.println("instance " + this.instance + " " + Thread.currentThread().getId() +
             " [x] Received '" + in + "'");
         doWork(in);
         watch.stop();
-        System.out.println("instance " + this.instance +
+        System.out.println("instance " + this.instance + " " + Thread.currentThread().getId() +
             " [x] Done in " + watch.getTotalTimeSeconds() + "s");
     }
 
