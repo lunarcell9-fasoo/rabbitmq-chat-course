@@ -1,0 +1,97 @@
+{
+	// Use IntelliSense to learn about possible attributes.
+	// Hover to view descriptions of existing attributes.
+	// For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+	"version": "0.2.0",
+	"compounds": [
+		{
+			"name": "Tut1",
+			"configurations": ["Tut1Receiver", "Tut1Sender"]
+		},
+		{
+			"name": "Tut2",
+			"configurations": ["Tut2Receiver", "Tut2Sender"]
+		},
+		{
+			"name": "Tut3",
+			"configurations": ["Tut3Receiver", "Tut3Sender"]
+		},
+		{
+			"name": "Tut4",
+			"configurations": ["Tut4Receiver", "Tut4Sender"]
+		}
+	],
+	"configurations": [
+		{
+			"type": "java",
+			"name": "RabbitChat",
+			"request": "launch",
+			"mainClass": "com.lunarcell.course.rabbitmqchat.RabbitmqChatApplication",
+			"projectName": "rabbitmq-chat",
+		},		
+		{
+			"type": "java",
+			"name": "Tut1Receiver",
+			"request": "launch",
+			"mainClass": "com.lunarcell.course.rabbitmqchat.RabbitmqChatApplication",
+			"projectName": "rabbitmq-chat",
+			"vmArgs": "-Dspring.profiles.active=tutorial,hello-world,receiver"
+		},
+		{
+			"type": "java",
+			"name": "Tut1Sender",
+			"request": "launch",
+			"mainClass": "com.lunarcell.course.rabbitmqchat.RabbitmqChatApplication",
+			"projectName": "rabbitmq-chat",
+			"vmArgs": "-Dspring.profiles.active=tutorial,hello-world,sender"
+		},
+		{
+			"type": "java",
+			"name": "Tut2Receiver",
+			"request": "launch",
+			"mainClass": "com.lunarcell.course.rabbitmqchat.RabbitmqChatApplication",
+			"projectName": "rabbitmq-chat",
+			"vmArgs": "-Dspring.profiles.active=tutorial,work-queues,receiver"
+		},
+		{
+			"type": "java",
+			"name": "Tut2Sender",
+			"request": "launch",
+			"mainClass": "com.lunarcell.course.rabbitmqchat.RabbitmqChatApplication",
+			"projectName": "rabbitmq-chat",
+			"vmArgs": "-Dspring.profiles.active=tutorial,work-queues,sender"
+		},
+		{
+			"type": "java",
+			"name": "Tut3Receiver",
+			"request": "launch",
+			"mainClass": "com.lunarcell.course.rabbitmqchat.RabbitmqChatApplication",
+			"projectName": "rabbitmq-chat",
+			"vmArgs": "-Dspring.profiles.active=tutorial,pub-sub,receiver"
+		},
+		{
+			"type": "java",
+			"name": "Tut3Sender",
+			"request": "launch",
+			"mainClass": "com.lunarcell.course.rabbitmqchat.RabbitmqChatApplication",
+			"projectName": "rabbitmq-chat",
+			"vmArgs": "-Dspring.profiles.active=tutorial,pub-sub,sender"
+		},
+		{
+			"type": "java",
+			"name": "Tut4Receiver",
+			"request": "launch",
+			"mainClass": "com.lunarcell.course.rabbitmqchat.RabbitmqChatApplication",
+			"projectName": "rabbitmq-chat",
+			"vmArgs": "-Dspring.profiles.active=tutorial,topics,receiver"
+		},
+		{
+			"type": "java",
+			"name": "Tut4Sender",
+			"request": "launch",
+			"mainClass": "com.lunarcell.course.rabbitmqchat.RabbitmqChatApplication",
+			"projectName": "rabbitmq-chat",
+			"vmArgs": "-Dspring.profiles.active=tutorial,topics,sender"
+		}
+	]
+}
