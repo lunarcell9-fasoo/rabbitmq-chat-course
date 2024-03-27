@@ -24,11 +24,12 @@
 	"configurations": [
 		{
 			"type": "java",
-			"name": "RabbitChat",
+			"name": "RabbitChatReceiver",
 			"request": "launch",
 			"mainClass": "com.lunarcell.course.rabbitmqchat.RabbitmqChatApplication",
 			"projectName": "rabbitmq-chat",
-		},		
+			"vmArgs": "-Dspring.profiles.active=receiver"
+		},
 		{
 			"type": "java",
 			"name": "Tut1Receiver",

@@ -4,8 +4,8 @@ spring:
   rabbitmq:
     username: admin
     password: Asdf1234$
-
-
+    virtual-host: chat
+  
 logging:
   level:
     org: ERROR
