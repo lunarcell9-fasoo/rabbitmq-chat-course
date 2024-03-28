@@ -5,10 +5,10 @@ import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
-@Profile("server")
+@Profile("client")
 @Component
-@RabbitListener(queues = "command")
-public class CommandListener {
+@RabbitListener(queues = "#{'user.'.concat('${spring.rabbitmq.username}')}")
+public class UserListener {
 	
     @RabbitHandler
     public void receive(String in) {

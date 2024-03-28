@@ -5,6 +5,10 @@
 	"version": "0.2.0",
 	"compounds": [
 		{
+			"name": "RabbitChat",
+			"configurations": ["RabbitChatServer", "RabbitChatClient"]
+		},
+		{
 			"name": "Tut1",
 			"configurations": ["Tut1Receiver", "Tut1Sender"]
 		},
@@ -24,12 +28,20 @@
 	"configurations": [
 		{
 			"type": "java",
-			"name": "RabbitChatReceiver",
+			"name": "RabbitChatServer",
 			"request": "launch",
 			"mainClass": "com.lunarcell.course.rabbitmqchat.RabbitmqChatApplication",
 			"projectName": "rabbitmq-chat",
-			"vmArgs": "-Dspring.profiles.active=receiver"
+			"vmArgs": "-Dspring.profiles.active=server"
 		},
+		{
+			"type": "java",
+			"name": "RabbitChatClient",
+			"request": "launch",
+			"mainClass": "com.lunarcell.course.rabbitmqchat.RabbitmqChatApplication",
+			"projectName": "rabbitmq-chat",
+			"vmArgs": "-Dspring.profiles.active=client"
+		},		
 		{
 			"type": "java",
 			"name": "Tut1Receiver",

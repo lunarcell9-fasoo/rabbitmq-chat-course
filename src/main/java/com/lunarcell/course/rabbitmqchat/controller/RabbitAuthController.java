@@ -34,7 +34,7 @@ public class RabbitAuthController {
 
 		System.out.println("postUser " + objectMapper.writeValueAsString(request));
 
-		if ("user".equals(request.getUsername()) && "pass".equals(request.getPassword())) {
+		if (request.getUsername().startsWith("user") && "pass".equals(request.getPassword())) {
 			return "allow administrator";
 		} else {
 			return "deny";
@@ -46,7 +46,7 @@ public class RabbitAuthController {
 
 		System.out.println("postVhost " + objectMapper.writeValueAsString(request));
 
-		if ("user".equals(request.getUsername()) && "chat".equals(request.getVhost())) {
+		if (request.getUsername().startsWith("user") && "chat".equals(request.getVhost())) {
 			return "allow";
 		} else {
 			return "deny";
@@ -58,11 +58,15 @@ public class RabbitAuthController {
 
 		System.out.println("postResource " + objectMapper.writeValueAsString(request));
 
-		if ("user".equals(request.getUsername())
+		if (request.getUsername().startsWith("user")
 				&& "chat".equals(request.getVhost())) {
 			if ("exchange".equals(request.getResource())
 					&& "request".equals(request.getName())
 					&& Arrays.asList("configure", "write").stream().anyMatch(request.getPermission()::equals)) {
+				return "allow";
+			} else if ("queue".equals(request.getResource())
+					&& ("user." + request.getUsername()).equals(request.getName())
+					&& Arrays.asList("configure", "write", "read").stream().anyMatch(request.getPermission()::equals)) {
 				return "allow";
 			}
 		}
@@ -77,7 +81,7 @@ public class RabbitAuthController {
 
 		Pattern pattern = Pattern.compile("^(chat|command)\\.\\w+");
 
-		if ("user".equals(request.getUsername())
+		if (request.getUsername().startsWith("user")
 				&& "chat".equals(request.getVhost())
 				&& "topic".equals(request.getResource())
 				&& "request".equals(request.getName())

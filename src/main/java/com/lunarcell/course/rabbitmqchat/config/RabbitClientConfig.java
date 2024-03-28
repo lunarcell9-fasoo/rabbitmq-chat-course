@@ -1,19 +1,21 @@
 package com.lunarcell.course.rabbitmqchat.config;
 
-import org.springframework.amqp.core.Binding;
-import org.springframework.amqp.core.BindingBuilder;
 import org.springframework.amqp.core.Queue;
-import org.springframework.amqp.core.TopicExchange;
 import org.springframework.amqp.rabbit.config.SimpleRabbitListenerContainerFactory;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitAdmin;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.amqp.RabbitProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 
-@Profile("server")
+@Profile("client")
 @Configuration
-public class RabbitConfig {
+public class RabbitClientConfig {
+
+	@Autowired
+	private RabbitProperties rabbitProperties;
 
 	@Bean
 	public RabbitAdmin amqpAdmin(ConnectionFactory connectionFactory) {
@@ -26,24 +28,14 @@ public class RabbitConfig {
 		factory.setConnectionFactory(connectionFactory);
 		factory.setPrefetchCount(1);
 		factory.setConcurrentConsumers(1);
-		factory.setMaxConcurrentConsumers(10);
+		factory.setMaxConcurrentConsumers(1);
 
 		return factory;
 	}
 
 	@Bean
-	public TopicExchange request() {
-		return new TopicExchange("request");
-	}
-
-	@Bean
-	public Queue command() {
-		return new Queue("command");
-	}
-
-	@Bean
-	public Binding binding(TopicExchange request, Queue command) {
-		return BindingBuilder.bind(command).to(request).with("command.#");
+	public Queue myUserQueue() {
+		return new Queue("user." + rabbitProperties.getUsername());
 	}
 
 }
