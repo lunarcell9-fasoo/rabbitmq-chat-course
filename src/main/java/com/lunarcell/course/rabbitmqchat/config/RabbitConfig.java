@@ -42,8 +42,27 @@ public class RabbitConfig {
 	}
 
 	@Bean
-	public Binding binding(TopicExchange request, Queue command) {
+	public TopicExchange chat() {
+		return new TopicExchange("chat");
+	}
+
+	@Bean
+	public TopicExchange user() {
+		return new TopicExchange("user");
+	}
+
+	@Bean
+	public Binding bindingRequestToCommand(TopicExchange request, Queue command) {
 		return BindingBuilder.bind(command).to(request).with("command.#");
 	}
 
+	@Bean
+	public Binding bindingRequestToChat(TopicExchange request, TopicExchange chat) {
+		return BindingBuilder.bind(chat).to(request).with("chat.#");
+	}
+
+	@Bean
+	public Binding bindingChatToUser(TopicExchange chat, TopicExchange user) {
+		return BindingBuilder.bind(user).to(chat).with("*.user.#");
+	}
 }

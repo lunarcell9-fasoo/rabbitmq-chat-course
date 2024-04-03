@@ -60,14 +60,20 @@ public class RabbitAuthController {
 
 		if (request.getUsername().startsWith("user")
 				&& "chat".equals(request.getVhost())) {
-			if ("exchange".equals(request.getResource())
-					&& "request".equals(request.getName())
-					&& Arrays.asList("configure", "write").stream().anyMatch(request.getPermission()::equals)) {
-				return "allow";
-			} else if ("queue".equals(request.getResource())
-					&& ("user." + request.getUsername()).equals(request.getName())
-					&& Arrays.asList("configure", "write", "read").stream().anyMatch(request.getPermission()::equals)) {
-				return "allow";
+			if ("exchange".equals(request.getResource())) {
+				if ("request".equals(request.getName())
+						&& Arrays.asList("configure", "write").stream().anyMatch(request.getPermission()::equals)) {
+					return "allow";
+				} else if ("user".equals(request.getName())
+						&& Arrays.asList("read").stream().anyMatch(request.getPermission()::equals)) {
+					return "allow";
+				}
+			} else if ("queue".equals(request.getResource())) {
+				if (("user." + request.getUsername()).equals(request.getName())
+						&& Arrays.asList("configure", "write", "read").stream()
+								.anyMatch(request.getPermission()::equals)) {
+					return "allow";
+				}
 			}
 		}
 
@@ -83,13 +89,19 @@ public class RabbitAuthController {
 
 		if (request.getUsername().startsWith("user")
 				&& "chat".equals(request.getVhost())
-				&& "topic".equals(request.getResource())
-				&& "request".equals(request.getName())
-				&& "write".equals(request.getPermission())
-				&& (request.getRouting_key() == null || pattern.matcher(request.getRouting_key()).find())) {
-			return "allow";
-		} else {
-			return "deny";
+				&& "topic".equals(request.getResource())) {
+			if ("request".equals(request.getName())
+					&& "write".equals(request.getPermission())
+					&& (request.getRouting_key() == null || pattern.matcher(request.getRouting_key()).find())) {
+				return "allow";
+			} else if ("user".equals(request.getName())
+					&& "read".equals(request.getPermission())
+					&& (request.getRouting_key() == null
+							|| ("*.user." + request.getUsername()).equals(request.getRouting_key()))) {
+				return "allow";
+			}
 		}
+
+		return "deny";
 	}
 }
