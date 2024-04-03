@@ -8,6 +8,8 @@ import org.springframework.amqp.rabbit.config.SimpleRabbitListenerContainerFacto
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitAdmin;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.amqp.rabbit.listener.ConditionalRejectingErrorHandler;
+import org.springframework.amqp.rabbit.listener.FatalExceptionStrategy;
 import org.springframework.amqp.support.converter.ContentTypeDelegatingMessageConverter;
 import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
 import org.springframework.amqp.support.converter.MessageConverter;
@@ -17,6 +19,10 @@ import org.springframework.boot.autoconfigure.amqp.RabbitProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
+import org.springframework.util.ErrorHandler;
+
+import com.lunarcell.course.rabbitmqchat.error.CustomErrorHandler;
+import com.lunarcell.course.rabbitmqchat.error.CustomFatalExceptionStrategy;
 
 @Profile("client")
 @Configuration
@@ -34,7 +40,7 @@ public class RabbitClientConfig {
 	public MessageConverter messageConverter() {
 		ContentTypeDelegatingMessageConverter converter = new ContentTypeDelegatingMessageConverter(
 				new Jackson2JsonMessageConverter());
-		
+
 		MessageConverter simple = (MessageConverter) new SimpleMessageConverter();
 		converter.addDelegate("text/plain", simple);
 		converter.addDelegate(null, simple);
@@ -49,10 +55,11 @@ public class RabbitClientConfig {
 		SimpleRabbitListenerContainerFactory factory = new SimpleRabbitListenerContainerFactory();
 		factory.setConnectionFactory(connectionFactory);
 		factory.setMessageConverter(messageConverter);
+		factory.setErrorHandler(rejectErrorHandler());
 		factory.setPrefetchCount(3);
 		factory.setConcurrentConsumers(3);
 		factory.setMaxConcurrentConsumers(3);
-		
+
 		return factory;
 	}
 
@@ -63,6 +70,21 @@ public class RabbitClientConfig {
 		RabbitTemplate template = new RabbitTemplate(connectionFactory);
 		template.setMessageConverter(messageConverter);
 		return template;
+	}
+
+	@Bean
+	public ErrorHandler customErrorHandler() {
+		return new CustomErrorHandler();
+	}
+
+	@Bean
+	public ErrorHandler rejectErrorHandler() {
+		return new ConditionalRejectingErrorHandler(customExceptionStrategy());
+	}
+
+	@Bean
+	public FatalExceptionStrategy customExceptionStrategy() {
+		return new CustomFatalExceptionStrategy();
 	}
 
 	@Bean
