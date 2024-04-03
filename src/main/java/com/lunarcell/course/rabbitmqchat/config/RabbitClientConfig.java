@@ -3,6 +3,7 @@ package com.lunarcell.course.rabbitmqchat.config;
 import org.springframework.amqp.core.Binding;
 import org.springframework.amqp.core.BindingBuilder;
 import org.springframework.amqp.core.Queue;
+import org.springframework.amqp.core.QueueBuilder;
 import org.springframework.amqp.core.TopicExchange;
 import org.springframework.amqp.rabbit.config.SimpleRabbitListenerContainerFactory;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
@@ -89,7 +90,9 @@ public class RabbitClientConfig {
 
 	@Bean
 	public Queue myUserQueue() {
-		return new Queue("user." + rabbitProperties.getUsername());
+		return QueueBuilder.durable("user." + rabbitProperties.getUsername())
+				.deadLetterExchange("")
+				.deadLetterRoutingKey("dead-letter").build();
 	}
 
 	@Bean

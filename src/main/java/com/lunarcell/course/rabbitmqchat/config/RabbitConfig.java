@@ -32,6 +32,11 @@ public class RabbitConfig {
 	}
 
 	@Bean
+	public Queue deadLetterQueue() {
+		return new Queue("dead-letter");
+	}
+
+	@Bean
 	public TopicExchange request() {
 		return new TopicExchange("request");
 	}
