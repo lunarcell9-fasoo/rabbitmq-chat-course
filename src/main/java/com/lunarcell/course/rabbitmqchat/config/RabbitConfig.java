@@ -1,12 +1,20 @@
 package com.lunarcell.course.rabbitmqchat.config;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.springframework.amqp.core.Binding;
+import org.springframework.amqp.core.Binding.DestinationType;
 import org.springframework.amqp.core.BindingBuilder;
+import org.springframework.amqp.core.CustomExchange;
+import org.springframework.amqp.core.Declarable;
+import org.springframework.amqp.core.Declarables;
 import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.core.TopicExchange;
 import org.springframework.amqp.rabbit.config.SimpleRabbitListenerContainerFactory;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitAdmin;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
@@ -57,6 +65,25 @@ public class RabbitConfig {
 	}
 
 	@Bean
+	public CustomExchange chatHash() {
+		return new CustomExchange("chat-hash", "x-consistent-hash");
+	}
+
+	@Bean
+	public Declarables chatHashQueueAndBindings(@Value("${rabbitmq.server.chat-concurrent}") int concurrent,
+			CustomExchange chatHash) {
+		List<Declarable> declarables = new ArrayList<>(concurrent * 2);
+
+		for (int i = 0; i < concurrent; i++) {
+			Queue queue = new Queue("chat." + i);
+			declarables.add(queue);
+			declarables.add(new Binding(queue.getName(), DestinationType.QUEUE, chatHash.getName(), "1", null));
+		}
+
+		return new Declarables(declarables);
+	}
+
+	@Bean
 	public Binding bindingRequestToCommand(TopicExchange request, Queue command) {
 		return BindingBuilder.bind(command).to(request).with("command.#");
 	}
@@ -64,6 +91,11 @@ public class RabbitConfig {
 	@Bean
 	public Binding bindingRequestToChat(TopicExchange request, TopicExchange chat) {
 		return BindingBuilder.bind(chat).to(request).with("chat.#");
+	}
+
+	@Bean
+	public Binding bindingRequestToChatHash(TopicExchange request, CustomExchange chatHash) {
+		return BindingBuilder.bind(chatHash).to(request).with("chat.#");
 	}
 
 	@Bean

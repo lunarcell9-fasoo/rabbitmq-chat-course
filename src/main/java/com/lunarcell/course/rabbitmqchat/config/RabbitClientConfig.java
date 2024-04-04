@@ -65,6 +65,21 @@ public class RabbitClientConfig {
 	}
 
 	@Bean
+	public SimpleRabbitListenerContainerFactory chatListenerContainerFactory(
+			ConnectionFactory connectionFactory,
+			MessageConverter messageConverter) {
+		SimpleRabbitListenerContainerFactory factory = new SimpleRabbitListenerContainerFactory();
+		factory.setConnectionFactory(connectionFactory);
+		factory.setMessageConverter(messageConverter);
+		factory.setErrorHandler(rejectErrorHandler());
+		factory.setPrefetchCount(250);
+		factory.setConcurrentConsumers(1);
+		factory.setMaxConcurrentConsumers(1);
+
+		return factory;
+	}
+
+	@Bean
 	public RabbitTemplate rabbitTemplate(
 			ConnectionFactory connectionFactory,
 			MessageConverter messageConverter) {

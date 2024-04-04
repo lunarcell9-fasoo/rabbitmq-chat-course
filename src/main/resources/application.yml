@@ -5,6 +5,10 @@ spring:
     username: admin
     password: Asdf1234$
     virtual-host: chat
+
+rabbitmq:
+  server:
+    chat-concurrent: 10
   
 logging:
   level:
