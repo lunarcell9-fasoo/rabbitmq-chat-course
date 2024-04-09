@@ -23,6 +23,10 @@
 		{
 			"name": "Tut4",
 			"configurations": ["Tut4Receiver", "Tut4Sender"]
+		},
+		{
+			"name": "Tut5",
+			"configurations": ["Tut5Server", "Tut5Client"]
 		}
 	],
 	"configurations": [
@@ -105,6 +109,22 @@
 			"mainClass": "com.lunarcell.course.rabbitmqchat.RabbitmqChatApplication",
 			"projectName": "rabbitmq-chat",
 			"vmArgs": "-Dspring.profiles.active=tutorial,topics,sender"
+		},
+		{
+			"type": "java",
+			"name": "Tut5Server",
+			"request": "launch",
+			"mainClass": "com.lunarcell.course.rabbitmqchat.RabbitmqChatApplication",
+			"projectName": "rabbitmq-chat",
+			"vmArgs": "-Dspring.profiles.active=tutorial,rpc,receiver -Dtutorial.client.duration=60000"
+		},
+		{
+			"type": "java",
+			"name": "Tut5Client",
+			"request": "launch",
+			"mainClass": "com.lunarcell.course.rabbitmqchat.RabbitmqChatApplication",
+			"projectName": "rabbitmq-chat",
+			"vmArgs": "-Dspring.profiles.active=tutorial,rpc,sender -Dtutorial.client.duration=60000"
 		}
 	]
 }

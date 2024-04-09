@@ -4,8 +4,11 @@ tutorial:
 
 spring:
   rabbitmq:
+    virtual-host: /
     listener:
       simple:
-        concurrency: 3
-        max-concurrency: 3
+        concurrency: 1
+        max-concurrency: 1
         prefetch: 1
+    # template:
+    #   reply-timeout: 60000

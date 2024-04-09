@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.regex.Pattern;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Profile;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -17,6 +18,7 @@ import com.lunarcell.course.rabbitmqchat.dto.TopicPathRequest;
 import com.lunarcell.course.rabbitmqchat.dto.UserPathRequest;
 import com.lunarcell.course.rabbitmqchat.dto.VhostPathRequest;
 
+@Profile("server")
 @RestController
 @RequestMapping("/rabbit/auth")
 public class RabbitAuthController {
