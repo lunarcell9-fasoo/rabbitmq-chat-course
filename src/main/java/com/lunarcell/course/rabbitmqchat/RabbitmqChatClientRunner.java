@@ -10,6 +10,7 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 import com.lunarcell.course.rabbitmqchat.dto.Chat;
+import com.lunarcell.course.rabbitmqchat.dto.Command;
 
 @Profile("client")
 @Component
@@ -28,12 +29,22 @@ public class RabbitmqChatClientRunner implements CommandLineRunner {
 			while(true) {
 				String message = scanner.nextLine();
 
-				Chat chat = new Chat();
-				chat.setBody(message);
-				chat.setUserName(rabbitProperties.getUsername());
-				
-				//this.template.convertAndSend("request", "chat.user." + rabbitProperties.getUsername(), message);
-				this.template.convertAndSend("request", "chat.user." + rabbitProperties.getUsername(), chat);
+				if (message.startsWith("/")) {
+					String[] commandAndArgs = message.substring(1).split("\\s", 2);
+					
+					Command command = new Command();
+					command.setBody(message);
+					command.setCommand(commandAndArgs[0]);
+					command.setArguments(commandAndArgs[1].split("\\s"));
+
+					this.template.convertAndSend("request", "command." + commandAndArgs[0], command);
+				} else {
+					Chat chat = new Chat();
+					chat.setBody(message);
+					chat.setUserName(rabbitProperties.getUsername());
+
+					this.template.convertAndSend("request", "chat.user." + rabbitProperties.getUsername(), chat);
+				}
 			}
 		}
 	}

@@ -3,25 +3,34 @@ package com.lunarcell.course.rabbitmqchat.config;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.aopalliance.aop.Advice;
 import org.springframework.amqp.core.Binding;
 import org.springframework.amqp.core.Binding.DestinationType;
 import org.springframework.amqp.core.BindingBuilder;
 import org.springframework.amqp.core.CustomExchange;
 import org.springframework.amqp.core.Declarable;
 import org.springframework.amqp.core.Declarables;
+import org.springframework.amqp.core.FanoutExchange;
 import org.springframework.amqp.core.Queue;
+import org.springframework.amqp.core.QueueBuilder;
 import org.springframework.amqp.core.TopicExchange;
 import org.springframework.amqp.rabbit.config.SimpleRabbitListenerContainerFactory;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitAdmin;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 
+import com.lunarcell.course.rabbitmqchat.error.RetryExchange;
+import com.lunarcell.course.rabbitmqchat.error.RetryExchangeInterceptor;
+
 @Profile("server")
 @Configuration
 public class RabbitConfig {
+
+	final int MAX_INTERVAL = 10000;
 
 	@Bean
 	public RabbitAdmin amqpAdmin(ConnectionFactory connectionFactory) {
@@ -101,5 +110,47 @@ public class RabbitConfig {
 	@Bean
 	public Binding bindingChatToUser(TopicExchange chat, TopicExchange user) {
 		return BindingBuilder.bind(user).to(chat).with("*.user.#");
+	}
+
+
+
+	/// retry
+
+
+	@Bean
+	public RetryExchange retryExchange(FanoutExchange commandRetryExchange) {
+		return new RetryExchange(1000, 3, MAX_INTERVAL, 5, commandRetryExchange);
+	}
+	
+	@Bean
+    public RetryExchangeInterceptor retryExchangeInterceptor(RabbitTemplate rabbitTemplate, RetryExchange retryExchange) {
+        return new RetryExchangeInterceptor(rabbitTemplate, retryExchange);
+    }
+
+	@Bean
+	public SimpleRabbitListenerContainerFactory retryExchangeContainerFactory(ConnectionFactory connectionFactory,
+			RetryExchangeInterceptor retryInterceptor) {
+		SimpleRabbitListenerContainerFactory factory = new SimpleRabbitListenerContainerFactory();
+		factory.setConnectionFactory(connectionFactory);
+
+		Advice[] adviceChain = { retryInterceptor };
+		factory.setAdviceChain(adviceChain);
+
+		return factory;
+	}
+
+	@Bean
+	public FanoutExchange commandRetryExchange() {
+		return new FanoutExchange("command.retry");
+	}
+
+	@Bean
+	public Queue commandRetryQueue() {
+		return QueueBuilder.durable("command.retry").ttl(MAX_INTERVAL).deadLetterExchange("request").build();
+	}
+
+	@Bean
+	public Binding bindingCommandRetry(FanoutExchange commandRetryExchange, Queue commandRetryQueue) {
+		return BindingBuilder.bind(commandRetryQueue).to(commandRetryExchange);
 	}
 }
